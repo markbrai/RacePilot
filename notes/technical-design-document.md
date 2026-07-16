@@ -155,6 +155,21 @@ At a basic level the upper envelope is a constant value defined by the runner in
 
 This constant value is then factored by a curve of 'aggressiveness' against distance. This curve will have values < 1 in the early stages of the race and > 1 at later stages to encourage the runner to hold back somewhat in the early stages but give 'green headroom' to accelerate in the latter stages.
 
+#### Lower envelope calculation
+
+Current state is calculated as:
+
+`(TargetElapsedTime - ActualElapsedTime) / (RaceDistance - CorrectedActualElapsedDistance)`
+
+> This implies that a positive value is AHEAD and negative value is BEHIND
+
+The key difference to the upper envelope calculation is that the delta time is divided by the **remaining** distance - this gives an indication of the increase in pace required to hit target time, e.g.:
+
+- Runner is 20s behind at 2km = `-20s / (21-2)km ~= -1s/km => Indicates runner only nominally needs to increase speed for the remainder of the race
+- Runner is 20s behind at 18km = `-20s / (21-18)km ~= 6s/km => Indicates runner may need to push too hard (if, e.g. max allowed increase is 5s then too fast)
+
+As with the upper envelope, the lower envelope uses the same 'Max allowed pace delta' - *multiplied by -1* - but framed as would I be happy to increase my pace to this amount for the rest of the race in order to win back my time. Likewise, a factor curve - independent to the upper envelope - is used to widen the envelope earlier in the race and tightening up later in the race to take in to account tiredness, etc.
+
 ## Update Cycle
 
 ## Module Communication
