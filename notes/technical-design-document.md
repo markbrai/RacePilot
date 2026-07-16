@@ -170,6 +170,28 @@ The key difference to the upper envelope calculation is that the delta time is d
 
 As with the upper envelope, the lower envelope uses the same 'Max allowed pace delta' - *multiplied by -1* - but framed as would I be happy to increase my pace to this amount for the rest of the race in order to win back my time. Likewise, a factor curve - independent to the upper envelope - is used to widen the envelope earlier in the race and tightening up later in the race to take in to account tiredness, etc.
 
+### HR Envelope
+
+HR envelope is used much more 'for indication only' than the core Pace Envelope - the runner should be reacting to Pace Envelope, but using HR Envelope just as an additional guide to whether they are pushing too hard. Uncontrollable and unpredictable factors on the day may increase/decrease HR from expected levels and so using HR as a core guide to over-stretching is not accurate, however an extended increased HR will still likely indicate an increase in used energy that can be used for additional guidance to the runner, especially earlier in the race. The runner would be expected to set envelope thresholds based on recent training at similar paces and conditions.
+
+The runner provides an upper, 'steady state' HR - in the same was as max pace is provided for Pace envelope - which defines the upper bound of the envelope. This is then multiplied by a similar factor curve based on race distance to give an earlier warning of possible too high HR during early stages and then effectively releasing the HR limit in latter stages where HR is expected to be higher than steady state.
+
+**TO INVESTIGATE: Could the datafield log HR over the first few km of target pace (Main race) to give a baseline? Or too much complexity for little gain?**
+
+### Stable Pace
+
+*Current pace stabilised over a short - e.g. 30s or 100-200m - period*
+
+### Pace Trend
+
+*Calculation, on a rolling basis, of whether pace is tending faster or slower or is stable*
+
+
+### Future Projection
+*Determination of whether, if pace trend continues, the runner will clip the upper or lower pace envelope bounds within the race distance remaining*
+
+
+
 ## Update Cycle
 
 ## Module Communication

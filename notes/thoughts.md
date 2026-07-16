@@ -1,0 +1,4 @@
+- Filtering of signals for clearly wrong events
+    - GPS
+    - Pace
+    - HR
