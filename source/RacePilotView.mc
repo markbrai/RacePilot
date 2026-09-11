@@ -2,13 +2,14 @@ import Toybox.Activity;
 import Toybox.Lang;
 import Toybox.Time;
 import Toybox.WatchUi;
+import RacePilot.RaceProfile
 
-class RacePilotView extends WatchUi.SimpleDataField {
+class RacePilotView extends WatchUi.DataField {
 
     // Set the label of the data field here.
     function initialize() {
-        SimpleDataField.initialize();
-        label = "My Label";
+        DataField.initialize();
+        var raceProfile = new RaceProfile();
     }
 
     // The given info object contains all the current workout
@@ -17,7 +18,7 @@ class RacePilotView extends WatchUi.SimpleDataField {
     // guarantee that compute() will be called before onUpdate().
     function compute(info as Activity.Info) as Numeric or Duration or String or Null {
         // See Activity.Info in the documentation for available information.
-        return 0.0;
+        return 1.0;
     }
 
 }

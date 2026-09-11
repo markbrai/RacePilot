@@ -4,8 +4,11 @@ import Toybox.WatchUi;
 
 class RacePilotApp extends Application.AppBase {
 
+    protected var racePilotView;
+
     function initialize() {
         AppBase.initialize();
+        racePilotView = new RacePilotView();
     }
 
     // onStart() is called on application start up
@@ -17,8 +20,9 @@ class RacePilotApp extends Application.AppBase {
     }
 
     // Return the initial view of your application here
-    function getInitialView() as [Views] or [Views, InputDelegates] {
-        return [ new RacePilotView() ];
+    function getInitialView()
+    {
+        return [ racePilotView ];
     }
 
 }
