@@ -12,7 +12,22 @@ class RacePilotView extends WatchUi.DataField {
     // Set the label of the data field here.
     function initialize() {
         DataField.initialize();
+        // Initialize the race profile object
         raceProfile = new RaceProfile();
+
+        // Initialize the RaceState object
+
+        // Initialize the PaceEngine object
+
+        // Initialize the PhaseManager object
+
+        // Initialize the DistanceCorrector object
+
+        // Initialize the TimeDeltaCalculator object
+
+        // Initialize the GuidanceEngine object
+
+        // Initialize the AlertEngine object
     }
 
     // The given info object contains all the current workout
@@ -22,7 +37,34 @@ class RacePilotView extends WatchUi.DataField {
     function compute(info as Activity.Info) {
         // See Activity.Info in the documentation for available information.
         // return self.raceProfile.mRaceDistance;  // Return the
-         displayValue = self.raceProfile.mRaceDistance;  // Return the race
+         displayValue = raceProfile.mRaceDistance;  // Return the race
+
+        // ****** BLOCKS FOR MAIN PROCESSING
+
+        // Update `DistanceCorrector` with GPS distance
+        // Get elapsed time
+        // Get current HR
+
+        // Calc current phase in `PhaseManager` based on corrected distance
+
+        // Calculate current time delta in `TimeDeltaCalculator` based on corrected distance and elapsed time
+
+        // Calculate equivalent average pace in `PaceEngine` based on corrected distance and time delta
+
+        // Calculate filtered current pace in `PaceEngine` based on GPS distance and elapsed time
+
+        // Calculate pace offset in `PaceEngine` based on target pace, equiv avg pace, and filtered current pace
+
+        // Calculate maximum sustainable pace in `PaceEngine` based on aggression settings and target pace
+
+        // Calculate envelope colour in PaceEngine
+
+        // PLACEHOLDER FOR GUIDANCE ENGINE
+
+        // Update `RaceState`
+
+        // Call `AlertEngine` to check for any alerts based on current state
+
     }
 
     function onUpdate(dc as Graphics.Dc) as Void{
