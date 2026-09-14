@@ -67,6 +67,8 @@ class RacePilotView extends WatchUi.DataField {
 
     }
 
+    // Display the value you computed here. This will be called
+    // once a second when the data field is visible.  
     function onUpdate(dc as Graphics.Dc) as Void{
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_BLACK);
         dc.clear();
