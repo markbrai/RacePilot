@@ -80,6 +80,16 @@ class RacePilotView extends WatchUi.DataField {
             displayValue as String,
             Graphics.TEXT_JUSTIFY_CENTER);
 
+        // ****** BLOCKS FOR DISPLAY PROCESSING
+
+        // Update time delta value and background colour
+
+        // Update filtered pace value
+
+        // Update HR value
+
+        // Update race phase bar
+
     }
 
 }
