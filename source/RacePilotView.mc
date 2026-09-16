@@ -7,6 +7,7 @@ using Toybox.Graphics;
 class RacePilotView extends WatchUi.DataField {
 
     protected var raceProfile;
+    protected var distanceCorrector;
     protected var displayValue; 
 
     // Set the label of the data field here.
@@ -22,6 +23,7 @@ class RacePilotView extends WatchUi.DataField {
         // Initialize the PhaseManager object
 
         // Initialize the DistanceCorrector object
+        distanceCorrector = new DistanceCorrector();
 
         // Initialize the TimeDeltaCalculator object
 
@@ -42,10 +44,16 @@ class RacePilotView extends WatchUi.DataField {
         // ****** BLOCKS FOR MAIN PROCESSING
 
         // Update `DistanceCorrector` with GPS distance
+        var newElapsedDistance = info.elapsedDistance;
+        distanceCorrector.updateDistances(newElapsedDistance);
+
         // Get elapsed time
         // Get current HR
+        var newElapsedTime = info.elapsedTime;
+        var newHearRate = info.currentHeartRate;
 
         // Calc current phase in `PhaseManager` based on corrected distance
+        var correctedDistance = distanceCorrector.correctedDistance;
 
         // Calculate current time delta in `TimeDeltaCalculator` based on corrected distance and elapsed time
 
