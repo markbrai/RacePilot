@@ -5,6 +5,8 @@ import Toybox.WatchUi;
 
 class RaceProfile {
 
+    // * INPUTS
+    // NOTE: Final version will pull these vars from ConnectIQ config
     // Race Distance in km
     var mRaceDistance = 21.0975;   // Default to HM
     // Target race time in seconds
@@ -18,6 +20,9 @@ class RaceProfile {
     var mArrHrTargets = [151, 155, 165, 180];
     var mAggressionLevel = 1;
 
+    // * INTERNAL
+    var targetPace = 0;
+
     function initialize() {
         // Initialization code for RaceProfile can go here.
 
@@ -25,4 +30,18 @@ class RaceProfile {
 
     }
     
+    function calcTargetPace() as Float {
+        // Calculate target pace based on race distance
+
+        var mTargetPace = mTargetTime / mRaceDistance;  // seconds per km
+
+        return mTargetPace;
+    }
+
+    function calcPhasePaces() as Array<Float> {
+        // Calculate target pace for each phase based on race
+        var phasePaces = [];
+        
+    }
+        
 }
