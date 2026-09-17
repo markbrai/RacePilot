@@ -6,30 +6,46 @@ using Toybox.Graphics;
 
 class RacePilotView extends WatchUi.DataField {
 
-    protected var raceProfile;
-    protected var distanceCorrector;
-    protected var displayValue; 
+    // Variables from ConnectIQ (ALL HARDCODED FOR NOW)
+    // -------------------------------------------------
+    // Total race distance
+    protected var raceDistance = 21.0975;
+    // Target time in MINUTES
+    // TODO: Add function to convert string of hh:mm:ss to seconds
+    protected var targetTime = 104.0;
+    // Gel frequency in MINUTES
+    protected var gelFrequency = 25.0;
+    // Time offset for first gel
+    protected var gelOffset = 30.0;
+    // Phase distances
+    // TODO: Add function to take semi-colon separated string and convert to array of floats
+    protected var phaseDistances = [0.0, 3.0, 15.0, 18.0] as Array<Float>;
+    // Controlled start pace delta (SECONDS/km)
+    protected var controlledStartDelta = 10.0;
+
+    // Class internal variables
+    // --------------------------------------------------
+
+    var targetPace = 0;  // Calcualted from race distance and target time
+    var timer = 0;  // timerTime converted to SECONDS
+    var distance = 0;  // elapsedDistance
+    var prevDistance = 0; // previous elapsedDistance
+    var correctedDistance = 0; // corrected elapsedDistance
+
+
+    //* ------------- CORE FUNCTIONS ------------------
 
     // Set the label of the data field here.
     function initialize() {
         DataField.initialize();
-        // Initialize the race profile object
-        raceProfile = new RaceProfile();
 
-        // Initialize the RaceState object
+        // Get device settings (LOW PRIORITY for the moment) - units, etc
 
-        // Initialize the PaceEngine object
+        // Initialise user data from ConnectIQ
+        initializeUserData();
 
-        // Initialize the PhaseManager object
 
-        // Initialize the DistanceCorrector object
-        distanceCorrector = new DistanceCorrector();
 
-        // Initialize the TimeDeltaCalculator object
-
-        // Initialize the GuidanceEngine object
-
-        // Initialize the AlertEngine object
     }
 
     // The given info object contains all the current workout
@@ -37,41 +53,20 @@ class RacePilotView extends WatchUi.DataField {
     // Note that compute() and onUpdate() are asynchronous, and there is no
     // guarantee that compute() will be called before onUpdate().
     function compute(info as Activity.Info) {
-        // See Activity.Info in the documentation for available information.
-        // return self.raceProfile.mRaceDistance;  // Return the
-         displayValue = raceProfile.mRaceDistance;  // Return the race
+        
+        // Convert timer from milliseconds to seconds
+        if (info.timerTime != null)
+        {
+            timer = info.timerTime / 1000; 
+        }
 
-        // ****** BLOCKS FOR MAIN PROCESSING
+        // Allows metric/imperial conversion in future if needed
+        if (info.elapsedDistance != null)
+        {
+            distance = info.elapsedDistance;
+        }
 
-        // Update `DistanceCorrector` with GPS distance
-        var newElapsedDistance = info.elapsedDistance;
-        distanceCorrector.updateDistances(newElapsedDistance);
-
-        // Get elapsed time
-        // Get current HR
-        var newElapsedTime = info.elapsedTime;
-        var newHearRate = info.currentHeartRate;
-
-        // Calc current phase in `PhaseManager` based on corrected distance
-        var correctedDistance = distanceCorrector.correctedDistance;
-
-        // Calculate current time delta in `TimeDeltaCalculator` based on corrected distance and elapsed time
-
-        // Calculate equivalent average pace in `PaceEngine` based on corrected distance and time delta
-
-        // Calculate filtered current pace in `PaceEngine` based on GPS distance and elapsed time
-
-        // Calculate pace offset in `PaceEngine` based on target pace, equiv avg pace, and filtered current pace
-
-        // Calculate maximum sustainable pace in `PaceEngine` based on aggression settings and target pace
-
-        // Calculate envelope colour in PaceEngine
-
-        // PLACEHOLDER FOR GUIDANCE ENGINE
-
-        // Update `RaceState`
-
-        // Call `AlertEngine` to check for any alerts based on current state
+        computeValues(info);
 
     }
 
@@ -99,7 +94,7 @@ class RacePilotView extends WatchUi.DataField {
             width / 2,
             height / 2,
             Graphics.FONT_MEDIUM,
-            displayValue as String,
+            "SOME TEST",
             Graphics.TEXT_JUSTIFY_CENTER);
 
 
@@ -114,6 +109,124 @@ class RacePilotView extends WatchUi.DataField {
 
         // Update race phase bar
 
+    }
+
+
+    // * ---------- Initialisation Functions ------------------
+
+    function initializeUserData() as Void {
+        // Get user data from ConnectIQ
+    }
+
+    // * ---------- RaceProfile Functions ------------------
+
+    function calcTargetPace() as Float {
+        /* 
+        Takes target time (in minutes) and race distance to 
+        calculate an overall race target pace
+        */
+
+        targetPace = (self.targetTime * 60) / self.raceDistance ;  // SECONDS per km
+
+        return targetPace;
+
+    }
+
+    function calcPhasePaces(targetPace as Float) as Array<Float> {
+        // Calculate target pace for each phase based on race
+        var phasePaces = [targetPace, targetPace, targetPace, targetPace] as Array<Float>;
+
+        var controlledStartDistance = phaseDistances[1];  // Assuming the second phase is the controlled start
+        var startToPushDistance = raceDistance - phaseDistances[2];  // Assuming the third phase is the start to push
+
+        // Calculate time 'lost' in controlled start if running at target pace - controlledStartDelta
+        var controlledStartLostTime = controlledStartDistance * controlledStartDelta;  // in seconds
+
+        // Calculate the pace adjustment in 'Start to Push' to make up controlledStartLostTime
+        var startToPushPaceIncrease = controlledStartLostTime / startToPushDistance;  // in s/km
+
+        var controlledStartPace = targetPace + controlledStartDelta;  // slower pace for controlled start
+        var startToPushPace = targetPace - startToPushPaceIncrease;
+
+        phasePaces[0] = controlledStartPace;
+        phasePaces[1] = targetPace;  // Main race phase
+        phasePaces[2] = startToPushPace;
+        phasePaces[3] = startToPushPace;  // Assuming the last phase is the same as 'Start to Push'
+
+        return phasePaces;
+
+    }
+
+    // * ---------- RaceState Functions ------------------
+
+
+
+    // * ---------- DistanceCorrector Functions ------------------
+
+    function updateDistance(newElapsedDistance as Float or Null) as Void {
+        // Update the corrected distance based on new elapsed distance
+        
+        // Update the previous elapsed distance
+        prevDistance = distance;
+
+        // Update the current elapsed distance
+        distance = newElapsedDistance;
+
+        // Calculate the delta distance
+        var deltaDistance = distance - prevDistance;
+
+        // Update the correct distance based on the delta distance
+        correctedDistance += deltaDistance;
+    }
+
+
+    // * ---------- PhaseManager Functions ------------------
+
+
+    // * ---------- TimeDeltaCalculator Functions ------------------
+
+
+    // * ---------- PaceEngine Functions ------------------
+
+
+    // * ---------- GuidanceEngine Functions ------------------
+
+
+    // * ---------- AlertManager Functions ------------------
+
+
+
+    function computeValues(info) as Void {
+        // Compute all values based on current info
+        // See Activity.Info in the documentation for available information.
+        // return self.raceProfile.mRaceDistance;  // Return the
+
+        // ****** BLOCKS FOR MAIN PROCESSING
+
+        // Update `DistanceCorrector` with GPS distance
+
+        // Get elapsed time
+        // Get current HR
+
+        // Calc current phase in `PhaseManager` based on corrected distance
+
+        // Calculate current time delta in `TimeDeltaCalculator` based on corrected distance and elapsed time
+
+        // Calculate equivalent average pace in `PaceEngine` based on corrected distance and time delta
+
+        // Calculate filtered current pace in `PaceEngine` based on GPS distance and elapsed time
+
+        // Calculate pace offset in `PaceEngine` based on target pace, equiv avg pace, and filtered current pace
+
+        // Calculate maximum sustainable pace in `PaceEngine` based on aggression settings and target pace
+
+        // Calculate envelope colour in PaceEngine
+
+        // PLACEHOLDER FOR GUIDANCE ENGINE
+
+        // Update `RaceState`
+
+        // Call `AlertEngine` to check for any alerts based on current state
     }
 
 }
