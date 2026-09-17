@@ -19,7 +19,9 @@ class RacePilotView extends WatchUi.DataField {
     protected var gelOffset = 30.0;
     // Phase distances
     // TODO: Add function to take semi-colon separated string and convert to array of floats
-    protected var phaseDistances = [0.0, 3.0, 15.0, 18.0];
+    protected var phaseDistances = [0.0, 3.0, 15.0, 18.0] as Array<Float>;
+    // Controlled start pace delta (SECONDS/km)
+    protected var controlledStartDelta = 10.0;
 
     // Class internal variables
     // --------------------------------------------------
@@ -39,6 +41,8 @@ class RacePilotView extends WatchUi.DataField {
 
         // Initialise user data from ConnectIQ
         initializeUserData();
+
+
 
     }
 
@@ -106,11 +110,73 @@ class RacePilotView extends WatchUi.DataField {
     }
 
 
-    // * ---------- Processing Functions ------------------
+    // * ---------- Initialisation Functions ------------------
 
     function initializeUserData() as Void {
         // Get user data from ConnectIQ
     }
+
+    // * ---------- RaceProfile Functions ------------------
+
+    function calcTargetPace() as Float {
+        /* 
+        Takes target time (in minutes) and race distance to 
+        calculate an overall race target pace
+        */
+
+        targetPace = (self.targetTime * 60) / self.raceDistance ;  // SECONDS per km
+
+        return targetPace;
+
+    }
+
+    function calcPhasePaces(targetPace as Float) as Array<Float> {
+        // Calculate target pace for each phase based on race
+        var phasePaces = [targetPace, targetPace, targetPace, targetPace] as Array<Float>;
+
+        var controlledStartDistance = phaseDistances[1];  // Assuming the second phase is the controlled start
+        var startToPushDistance = raceDistance - phaseDistances[2];  // Assuming the third phase is the start to push
+
+        // Calculate time 'lost' in controlled start if running at target pace - controlledStartDelta
+        var controlledStartLostTime = controlledStartDistance * controlledStartDelta;  // in seconds
+
+        // Calculate the pace adjustment in 'Start to Push' to make up controlledStartLostTime
+        var startToPushPaceIncrease = controlledStartLostTime / startToPushDistance;  // in s/km
+
+        var controlledStartPace = targetPace + controlledStartDelta;  // slower pace for controlled start
+        var startToPushPace = targetPace - startToPushPaceIncrease;
+
+        phasePaces[0] = controlledStartPace;
+        phasePaces[1] = targetPace;  // Main race phase
+        phasePaces[2] = startToPushPace;
+        phasePaces[3] = startToPushPace;  // Assuming the last phase is the same as 'Start to Push'
+
+        return phasePaces;
+
+    }
+
+    // * ---------- RaceState Functions ------------------
+
+
+
+    // * ---------- DistanceCorrector Functions ------------------
+
+
+    // * ---------- PhaseManager Functions ------------------
+
+
+    // * ---------- TimeDeltaCalculator Functions ------------------
+
+
+    // * ---------- PaceEngine Functions ------------------
+
+
+    // * ---------- GuidanceEngine Functions ------------------
+
+
+    // * ---------- AlertManager Functions ------------------
+
+
 
     function computeValues(info) as Void {
         // Compute all values based on current info
