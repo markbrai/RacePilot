@@ -21,7 +21,7 @@ class RacePilotView extends WatchUi.DataField {
     // TODO: Add function to take semi-colon separated string and convert to array of floats
     protected var phaseDistances = [0.0, 3.0, 15.0, 18.0] as Array<Float>;
     // Controlled start pace delta (SECONDS/km)
-    protected var controlledStartDelta = 10.0;
+    protected var controlledStartDelta = 5.0;
 
     // Class internal variables
     // --------------------------------------------------
@@ -32,6 +32,7 @@ class RacePilotView extends WatchUi.DataField {
     var distance = 0;  // elapsedDistance
     var prevDistance = 0; // previous elapsedDistance
     var correctedDistance = 0; // corrected elapsedDistance
+    var phase = 0; // Current race phase (0-4)
 
 
 
@@ -68,6 +69,7 @@ class RacePilotView extends WatchUi.DataField {
         if (info.elapsedDistance != null)
         {
             distance = info.elapsedDistance;
+            updateDistance(distance);
         }
 
         computeValues(info);
@@ -161,10 +163,6 @@ class RacePilotView extends WatchUi.DataField {
 
     }
 
-    // * ---------- RaceState Functions ------------------
-
-
-
     // * ---------- DistanceCorrector Functions ------------------
 
     function updateDistance(newElapsedDistance as Float or Null) as Void {
@@ -211,6 +209,13 @@ class RacePilotView extends WatchUi.DataField {
 
     // * ---------- TimeDeltaCalculator Functions ------------------
 
+    function calcTimeDelta(correctedDistance as Float, elapsedTime as Float) as Float {
+        // Calculate the time delta based on corrected distance and elapsed time
+        // Time delta is the difference between expected time and actual time
+        var expectedTime = (correctedDistance / raceDistance) * (targetTime * 60);  // in seconds
+        var timeDelta = elapsedTime - expectedTime;  // in seconds
+        return timeDelta;
+    }
 
     // * ---------- PaceEngine Functions ------------------
 
@@ -229,12 +234,8 @@ class RacePilotView extends WatchUi.DataField {
 
         // ****** BLOCKS FOR MAIN PROCESSING
 
-        // Update `DistanceCorrector` with GPS distance
-
-        // Get elapsed time
-        // Get current HR
-
         // Calc current phase in `PhaseManager` based on corrected distance
+        phase = whichPhase(correctedDistance);
 
         // Calculate current time delta in `TimeDeltaCalculator` based on corrected distance and elapsed time
 
