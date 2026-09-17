@@ -186,7 +186,7 @@ class RacePilotView extends WatchUi.DataField {
 
     // * ---------- PhaseManager Functions ------------------
 
-    function whichPhase(distance as Float) as Integer {
+    function whichPhase(correctedDistance as Float) as Integer {
         // Determine which phase the runner is currently in based on distance
         /*
         Phase 0: 0 to phaseDistances[0]
