@@ -189,14 +189,19 @@ class RacePilotView extends WatchUi.DataField {
     function whichPhase(correctedDistance as Float) as Integer {
         // Determine which phase the runner is currently in based on distance
         /*
-        Phase 0: 0 to phaseDistances[0]
-        Phase 1: phaseDistances[0] to phaseDistances[1]
-        Phase 2: phaseDistances[1] to phaseDistances[2]
-        Phase 3: phaseDistances[2] to phaseDistances[3]
-        Phase 4: phaseDistances[3] to race
+        Phase 0: 0 to phaseDistances[0] - Race Start
+        Phase 1: phaseDistances[0] to phaseDistances[1] - Controlled Start
+        Phase 2: phaseDistances[1] to phaseDistances[2] - Main Race
+        Phase 3: phaseDistances[2] to phaseDistances[3] - Start to Push
+        Phase 4: phaseDistances[3] to race - Empty the Bucket
         */
         for (var i = 0; i < phaseDistances.size(); i++) {
-            if (distance < phaseDistances[i]) {
+            // At start of race, return 0
+            if (correctedDistance == 0 | correctedDistance == null) {
+                return 0
+            }
+            // Else return current phase
+            if (correctedDistance < phaseDistances[i]) {
                 return i;
             }
         }
