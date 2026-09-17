@@ -27,10 +27,12 @@ class RacePilotView extends WatchUi.DataField {
     // --------------------------------------------------
 
     var targetPace = 0;  // Calcualted from race distance and target time
+    var phasePaces = new Array<Float>[4]
     var timer = 0;  // timerTime converted to SECONDS
     var distance = 0;  // elapsedDistance
     var prevDistance = 0; // previous elapsedDistance
     var correctedDistance = 0; // corrected elapsedDistance
+
 
 
     //* ------------- CORE FUNCTIONS ------------------
@@ -44,7 +46,9 @@ class RacePilotView extends WatchUi.DataField {
         // Initialise user data from ConnectIQ
         initializeUserData();
 
-
+        // Calculate target pace and phase paces
+        targetPace = calcTargetPace();
+        phasePaces = calcPhasePaces(targetPace);
 
     }
 
