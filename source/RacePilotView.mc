@@ -186,6 +186,23 @@ class RacePilotView extends WatchUi.DataField {
 
     // * ---------- PhaseManager Functions ------------------
 
+    function whichPhase(distance as Float) as Integer {
+        // Determine which phase the runner is currently in based on distance
+        /*
+        Phase 0: 0 to phaseDistances[0]
+        Phase 1: phaseDistances[0] to phaseDistances[1]
+        Phase 2: phaseDistances[1] to phaseDistances[2]
+        Phase 3: phaseDistances[2] to phaseDistances[3]
+        Phase 4: phaseDistances[3] to race
+        */
+        for (var i = 0; i < phaseDistances.size(); i++) {
+            if (distance < phaseDistances[i]) {
+                return i;
+            }
+        }
+        return phaseDistances.size();  // If beyond last phase, return size
+    }
+
 
     // * ---------- TimeDeltaCalculator Functions ------------------
 
