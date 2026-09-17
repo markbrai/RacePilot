@@ -28,8 +28,8 @@ class RacePilotView extends WatchUi.DataField {
 
     var targetPace = 0;  // Calcualted from race distance and target time
     var phasePaces = new Array<Float>[4];
-    const TABLE_STEP = 0.1;  // km
-    var expectedTimeTable = new Array<Float>[Math.ceil(raceDistance / TABLE_STEP) + 1];  // Expected time table for each distance step
+    const TABLE_STEP = 0.05;  // km - every 50 metres
+    var expectedTimeTable = [];  // Expected time table for each distance step
     var timer = 0;  // timerTime converted to SECONDS
     var distance = 0;  // elapsedDistance
     var prevDistance = 0; // previous elapsedDistance
@@ -52,6 +52,7 @@ class RacePilotView extends WatchUi.DataField {
         // Calculate target pace and phase paces
         targetPace = calcTargetPace();
         phasePaces = calcPhasePaces(targetPace);
+        expectedTimeTable = buildExpectedTimeTable();
 
     }
 
@@ -165,9 +166,19 @@ class RacePilotView extends WatchUi.DataField {
 
     }
 
-    function getTargetPace(distance as Flot) as Float {
-
-        var pct = distance / raceDistance;
+    function getTargetPace(distance) as Float {
+        for (var i = 0; i < phasePaces.size(); i++) {
+            // At start of race, return 0
+            if (correctedDistance == 0 || correctedDistance == null) {
+                return phasePaces[0];
+            }
+            // Else return current phase
+            if (correctedDistance < phaseDistances[i]) {
+                return phasePaces[i];
+            }
+        }
+        return phasePaces[3];  // If beyond last phase, return size
+    }
     }
 
     function buildExpectedTimeTable() {
@@ -175,12 +186,18 @@ class RacePilotView extends WatchUi.DataField {
         expectedTimeTable.clear();
 
         var cumulativeTime = 0.0;
-        var distance = 0.0;
+        var _distance = 0.0;
 
         expectedTimeTable.add(0.0);
 
-        while distance < raceDistance) {
-            var pace = 
+        // Build the table at TABLE_STEP increments until the race distance is reached
+        while(_distance < raceDistance) {
+
+            // use midpoint of segment for better accuracy
+            var pace = getTargetPace(_distance + TABLE_STEP / 2);
+            cumulativeTime += pace * TABLE_STEP;  // pace is in seconds per km, TABLE_STEP is in km, so cumulativeTime is in seconds
+            expectedTimeTable.add(cumulativeTime);
+            _distance += TABLE_STEP;
         }
     }
 
@@ -216,8 +233,8 @@ class RacePilotView extends WatchUi.DataField {
         */
         for (var i = 0; i < phaseDistances.size(); i++) {
             // At start of race, return 0
-            if (correctedDistance == 0 | correctedDistance == null) {
-                return 0
+            if (correctedDistance == 0 || correctedDistance == null) {
+                return 0;
             }
             // Else return current phase
             if (correctedDistance < phaseDistances[i]) {
@@ -235,10 +252,35 @@ class RacePilotView extends WatchUi.DataField {
         // Time delta is the difference between expected time and actual time
 
         // ? This works for a flat pace - how to take in to account 'negative split'?
-        var expectedTime = (correctedDistance / raceDistance) * (targetTime * 60);  // in seconds
-        var timeDelta = elapsedTime - expectedTime;  // in seconds
-        return timeDelta;
+        var expectedTime = getExpectedTime(correctedDistance);
+
+        return elapsedTime - expectedTime;
     }
+
+    function getExpectedTime(corrDistance as Float) as Float {
+        // Gets the expected time from the lookup table
+
+        if (corrDistance <= 0.0) {
+            return 0.0;
+        }
+
+        if (corrDistance >= raceDistance) {
+            return expectedTimeTable[expectedTimeTable.size() - 1];
+        }
+
+        var indexFloat = corrDistance / TABLE_STEP;
+
+        var lowerIndex = indexFloat.toNumber().toLong();
+
+        var fraction = indexFloat - lowerIndex;
+
+        var lowerTime = expectedTimeTable[lowerIndex];
+        var upperTime = expectedTimeTable[lowerIndex + 1];
+
+        return lowerTime + ((upperTime - lowerTime) * fraction);
+    }
+
+
 
     // * ---------- PaceEngine Functions ------------------
 
