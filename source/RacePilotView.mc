@@ -35,6 +35,7 @@ class RacePilotView extends WatchUi.DataField {
     var prevDistance = 0; // previous elapsedDistance
     var correctedDistance = 0; // corrected elapsedDistance
     var phase = 0; // Current race phase (0-4)
+    var timeDelta = 0;
 
 
 
@@ -179,7 +180,6 @@ class RacePilotView extends WatchUi.DataField {
         }
         return phasePaces[3];  // If beyond last phase, return size
     }
-    }
 
     function buildExpectedTimeTable() {
 
@@ -303,6 +303,8 @@ class RacePilotView extends WatchUi.DataField {
         phase = whichPhase(correctedDistance);
 
         // Calculate current time delta in `TimeDeltaCalculator` based on corrected distance and elapsed time
+        // This value is displayed to the user
+        timeDelta = calcTimeDelta(correctedDistance, timer);
 
         // Calculate equivalent average pace in `PaceEngine` based on corrected distance and time delta
 
