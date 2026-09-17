@@ -27,7 +27,9 @@ class RacePilotView extends WatchUi.DataField {
     // --------------------------------------------------
 
     var targetPace = 0;  // Calcualted from race distance and target time
-    var phasePaces = new Array<Float>[4]
+    var phasePaces = new Array<Float>[4];
+    const TABLE_STEP = 0.1;  // km
+    var expectedTimeTable = new Array<Float>[Math.ceil(raceDistance / TABLE_STEP) + 1];  // Expected time table for each distance step
     var timer = 0;  // timerTime converted to SECONDS
     var distance = 0;  // elapsedDistance
     var prevDistance = 0; // previous elapsedDistance
@@ -163,6 +165,25 @@ class RacePilotView extends WatchUi.DataField {
 
     }
 
+    function getTargetPace(distance as Flot) as Float {
+
+        var pct = distance / raceDistance;
+    }
+
+    function buildExpectedTimeTable() {
+
+        expectedTimeTable.clear();
+
+        var cumulativeTime = 0.0;
+        var distance = 0.0;
+
+        expectedTimeTable.add(0.0);
+
+        while distance < raceDistance) {
+            var pace = 
+        }
+    }
+
     // * ---------- DistanceCorrector Functions ------------------
 
     function updateDistance(newElapsedDistance as Float or Null) as Void {
@@ -212,6 +233,8 @@ class RacePilotView extends WatchUi.DataField {
     function calcTimeDelta(correctedDistance as Float, elapsedTime as Float) as Float {
         // Calculate the time delta based on corrected distance and elapsed time
         // Time delta is the difference between expected time and actual time
+
+        // ? This works for a flat pace - how to take in to account 'negative split'?
         var expectedTime = (correctedDistance / raceDistance) * (targetTime * 60);  // in seconds
         var timeDelta = elapsedTime - expectedTime;  // in seconds
         return timeDelta;
