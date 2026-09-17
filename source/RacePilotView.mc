@@ -29,6 +29,8 @@ class RacePilotView extends WatchUi.DataField {
     var targetPace = 0;  // Calcualted from race distance and target time
     var timer = 0;  // timerTime converted to SECONDS
     var distance = 0;  // elapsedDistance
+    var prevDistance = 0; // previous elapsedDistance
+    var correctedDistance = 0; // corrected elapsedDistance
 
 
     //* ------------- CORE FUNCTIONS ------------------
@@ -160,6 +162,22 @@ class RacePilotView extends WatchUi.DataField {
 
 
     // * ---------- DistanceCorrector Functions ------------------
+
+    function updateDistance(newElapsedDistance as Float or Null) as Void {
+        // Update the corrected distance based on new elapsed distance
+        
+        // Update the previous elapsed distance
+        prevDistance = distance;
+
+        // Update the current elapsed distance
+        distance = newElapsedDistance;
+
+        // Calculate the delta distance
+        var deltaDistance = distance - prevDistance;
+
+        // Update the correct distance based on the delta distance
+        correctedDistance += deltaDistance;
+    }
 
 
     // * ---------- PhaseManager Functions ------------------
