@@ -28,7 +28,7 @@ class RacePilotView extends WatchUi.DataField {
     // --------------------------------------------------
 
     var targetPace = 0;  // Calcualted from race distance and target time
-    var phasePaces = new Array<Float>[4];
+    var phasePaces = [] as Array<Float>;
     const TABLE_STEP = 0.05;  // km - every 50 metres
     var expectedTimeTable = [] as Array<Float>;  // Expected time table for each distance step
     var timer = 0;  // timerTime converted to SECONDS
@@ -173,18 +173,20 @@ class RacePilotView extends WatchUi.DataField {
 
     }
 
-    function getTargetPace(distance) as Float {
-        for (var i = 0; i < phasePaces.size(); i++) {
-            // At start of race, return 0
-            if (correctedDistance == 0 || correctedDistance == null) {
-                return phasePaces[0];
-            }
+    function getTargetPace(correctedDistance) as Float {
+
+        // At start of race, return 0
+        if (correctedDistance <= 0) {
+            return phasePaces[0];
+        }
+
+        for (var i = 0; i < phaseDistances.size(); i++) {
             // Else return current phase
             if (correctedDistance < phaseDistances[i]) {
                 return phasePaces[i];
             }
         }
-        return phasePaces[3];  // If beyond last phase, return size
+        return phasePaces[phasePaces.size() - 1];  // If beyond last phase, return size
     }
 
     function buildExpectedTimeTable() as Array<Float>{
