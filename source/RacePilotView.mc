@@ -3,6 +3,7 @@ import Toybox.Lang;
 import Toybox.Time;
 using Toybox.WatchUi;
 using Toybox.Graphics;
+using Toybox.System;
 
 class RacePilotView extends WatchUi.DataField {
 
@@ -29,7 +30,7 @@ class RacePilotView extends WatchUi.DataField {
     var targetPace = 0;  // Calcualted from race distance and target time
     var phasePaces = new Array<Float>[4];
     const TABLE_STEP = 0.05;  // km - every 50 metres
-    var expectedTimeTable = [];  // Expected time table for each distance step
+    var expectedTimeTable = [] as Array<Float>;  // Expected time table for each distance step
     var timer = 0;  // timerTime converted to SECONDS
     var distance = 0;  // elapsedDistance
     var prevDistance = 0; // previous elapsedDistance
@@ -56,6 +57,8 @@ class RacePilotView extends WatchUi.DataField {
         phasePaces = calcPhasePaces(targetPace);
         expectedTimeTable = buildExpectedTimeTable();
 
+        System.println(getExpectedTime(15.1));
+
     }
 
     // The given info object contains all the current workout
@@ -78,6 +81,8 @@ class RacePilotView extends WatchUi.DataField {
         }
 
         computeValues(info);
+
+        
 
     }
 
@@ -105,7 +110,7 @@ class RacePilotView extends WatchUi.DataField {
             width / 2,
             height / 2,
             Graphics.FONT_MEDIUM,
-            "SOME TEST",
+            "Some Text",
             Graphics.TEXT_JUSTIFY_CENTER);
 
 
@@ -182,9 +187,9 @@ class RacePilotView extends WatchUi.DataField {
         return phasePaces[3];  // If beyond last phase, return size
     }
 
-    function buildExpectedTimeTable() {
+    function buildExpectedTimeTable() as Array<Float>{
 
-        expectedTimeTable.clear();
+        var expectedTimeTable = [] as Array<Float>;
 
         var cumulativeTime = 0.0;
         var _distance = 0.0;
@@ -200,6 +205,8 @@ class RacePilotView extends WatchUi.DataField {
             expectedTimeTable.add(cumulativeTime);
             _distance += TABLE_STEP;
         }
+
+        return expectedTimeTable;
     }
 
     // * ---------- DistanceCorrector Functions ------------------
@@ -281,7 +288,7 @@ class RacePilotView extends WatchUi.DataField {
 
         var indexFloat = corrDistance / TABLE_STEP;
 
-        var lowerIndex = indexFloat.toNumber().toLong();
+        var lowerIndex = indexFloat.toNumber().toLong().toNumber();
 
         var fraction = indexFloat - lowerIndex;
 
@@ -316,7 +323,7 @@ class RacePilotView extends WatchUi.DataField {
         // Calculate current time delta in `TimeDeltaCalculator` based on corrected distance and elapsed time
         // This value is displayed to the user
         timeDelta = calcPlanDelta(correctedDistance, timer);
-        goalDelta = calcGoalData();
+        goalDelta = calcGoalDelta(correctedDistance, timer);
 
         // Calculate equivalent average pace in `PaceEngine` based on corrected distance and time delta
 
