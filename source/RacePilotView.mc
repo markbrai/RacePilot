@@ -38,6 +38,7 @@ class RacePilotView extends WatchUi.DataField {
     var phase = 0; // Current race phase (0-4)
     var timeDelta = 0;
     var goalDelta = 0;
+    var expectedTime = 0;
 
 
 
@@ -57,8 +58,6 @@ class RacePilotView extends WatchUi.DataField {
         phasePaces = calcPhasePaces(targetPace);
         expectedTimeTable = buildExpectedTimeTable();
 
-        System.println(getExpectedTime(15.1));
-
     }
 
     // The given info object contains all the current workout
@@ -76,8 +75,7 @@ class RacePilotView extends WatchUi.DataField {
         // Allows metric/imperial conversion in future if needed
         if (info.elapsedDistance != null)
         {
-            distance = info.elapsedDistance;
-            updateDistance(distance);
+            updateDistance(info.elapsedDistance);
         }
 
         computeValues(info);
@@ -110,7 +108,7 @@ class RacePilotView extends WatchUi.DataField {
             width / 2,
             height / 2,
             Graphics.FONT_MEDIUM,
-            "Some Text",
+            getExpectedTime(correctedDistance),
             Graphics.TEXT_JUSTIFY_CENTER);
 
 
