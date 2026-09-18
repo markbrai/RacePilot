@@ -36,6 +36,7 @@ class RacePilotView extends WatchUi.DataField {
     var correctedDistance = 0; // corrected elapsedDistance
     var phase = 0; // Current race phase (0-4)
     var timeDelta = 0;
+    var goalDelta = 0;
 
 
 
@@ -248,7 +249,7 @@ class RacePilotView extends WatchUi.DataField {
     // * ---------- TimeDeltaCalculator Functions ------------------
 
     function calcPlanDelta(correctedDistance as Float, elapsedTime as Float) as Float {
-        // Based on PLAN paces
+        // * Based on PLAN paces --> This is the value shown to the runner
         // Calculate the time delta based on corrected distance and elapsed time
         // Time delta is the difference between expected time and actual time
 
@@ -258,7 +259,7 @@ class RacePilotView extends WatchUi.DataField {
     }
 
     function calcGoalDelta(correctedDistance as Float, elapsedTime as Float) as Float {
-        // Based on Goal pace (distance / time)
+        // * Based on Goal pace (distance / time) --> For internal use only
         // Calculate the time delta based on corrected distance and elapsed time
         // Time delta is the difference between expected time and actual time
 
@@ -268,7 +269,7 @@ class RacePilotView extends WatchUi.DataField {
     }
 
     function getExpectedTime(corrDistance as Float) as Float {
-        // Gets the expected time from the lookup table
+        // Interpolates the expected time from the lookup table
 
         if (corrDistance <= 0.0) {
             return 0.0;
@@ -315,6 +316,7 @@ class RacePilotView extends WatchUi.DataField {
         // Calculate current time delta in `TimeDeltaCalculator` based on corrected distance and elapsed time
         // This value is displayed to the user
         timeDelta = calcPlanDelta(correctedDistance, timer);
+        goalDelta = calcGoalData();
 
         // Calculate equivalent average pace in `PaceEngine` based on corrected distance and time delta
 
