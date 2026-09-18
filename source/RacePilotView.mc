@@ -247,14 +247,24 @@ class RacePilotView extends WatchUi.DataField {
 
     // * ---------- TimeDeltaCalculator Functions ------------------
 
-    function calcTimeDelta(correctedDistance as Float, elapsedTime as Float) as Float {
+    function calcPlanDelta(correctedDistance as Float, elapsedTime as Float) as Float {
+        // Based on PLAN paces
         // Calculate the time delta based on corrected distance and elapsed time
         // Time delta is the difference between expected time and actual time
 
-        // ? This works for a flat pace - how to take in to account 'negative split'?
         var expectedTime = getExpectedTime(correctedDistance);
 
         return elapsedTime - expectedTime;
+    }
+
+    function calcGoalDelta(correctedDistance as Float, elapsedTime as Float) as Float {
+        // Based on Goal pace (distance / time)
+        // Calculate the time delta based on corrected distance and elapsed time
+        // Time delta is the difference between expected time and actual time
+
+        var expectedTime = targetPace * correctedDistance; 
+        
+        return elapsedTime - expectedTime;  
     }
 
     function getExpectedTime(corrDistance as Float) as Float {
@@ -304,7 +314,7 @@ class RacePilotView extends WatchUi.DataField {
 
         // Calculate current time delta in `TimeDeltaCalculator` based on corrected distance and elapsed time
         // This value is displayed to the user
-        timeDelta = calcTimeDelta(correctedDistance, timer);
+        timeDelta = calcPlanDelta(correctedDistance, timer);
 
         // Calculate equivalent average pace in `PaceEngine` based on corrected distance and time delta
 
