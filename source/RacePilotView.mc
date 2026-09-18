@@ -218,7 +218,7 @@ class RacePilotView extends WatchUi.DataField {
         prevDistance = distance;
 
         // Update the current elapsed distance
-        distance = newElapsedDistance;
+        distance = newElapsedDistance / 1000;  // info.elapsedDistance is in m
 
         // Calculate the delta distance
         var deltaDistance = distance - prevDistance;
