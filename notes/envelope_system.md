@@ -526,3 +526,31 @@ Trust the plan.
 ```
 
 while allowing all complexity and planning to remain hidden behind the scenes.
+
+
+
+
+# Required Calculations from Excel
+
+## Grey envelope
+Calculate 'recoverable' time from max allowed pace delta (2% of target pace) and remaining race distance
+
+`Recoverable Time = MaxPaceDelta * RemainingDistance`
+
+Then multiplied by execution factor interpolated from array.
+
+
+## Blue envelope
+Calculated from grey envelope and a further factor 
+
+
+## Red envelope
+Calculated from max allowed pace delta (2% of target pace) * factor
+
+Factor is 1.0 for most of race but moves out towards end of race
+
+
+## Yellow envelope
+Calcualted from red envelope * factor
+
+At start factor is 0 for first 10%, then ramps from 0.0 to 0.5 at 50% race distance. Factor is 0.5 from 50% to 75% distance and then ramps to 0.70 which it continues with until race end.
