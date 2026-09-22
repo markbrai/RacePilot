@@ -75,20 +75,21 @@ class RacePilotView extends WatchUi.DataField {
     // Class internal variables
     // --------------------------------------------------
 
-    var targetPace = 0;  // Calcualted from race distance and target time
+    var targetPace = 0.0;  // Calcualted from race distance and target time
     var phasePaces = [] as Array<Float>;
     const TABLE_STEP = 0.05;  // km - every 50 metres
     var expectedTimeTable = [] as Array<Float>;  // Expected time table for each distance step
-    var timer = 0;  // timerTime converted to SECONDS
-    var distance = 0;  // elapsedDistance
-    var prevDistance = 0; // previous elapsedDistance
-    var correctedDistance = 0; // corrected elapsedDistance
+    var timer = 0.0;  // timerTime converted to SECONDS
+    var distance = 0.0;  // elapsedDistance
+    var prevDistance = 0.0; // previous elapsedDistance
+    var correctedDistance = 0.0; // corrected elapsedDistance
+    var raceProgress = 0.0; // Race progress percentage
     var phase = 0; // Current race phase (0-4)
-    var timeDelta = 0;
-    var goalDelta = 0;
-    var expectedTime = 0;
-    var recoveryPaceDelta = 0;
-    var aggressivePaceDelta = 0;
+    var timeDelta = 0.0;
+    var goalDelta = 0.0;
+    var expectedTime = 0.0;
+    var recoveryPaceDelta = 0.0;
+    var aggressivePaceDelta = 0.0;
 
 
 
@@ -130,6 +131,7 @@ class RacePilotView extends WatchUi.DataField {
         if (info.elapsedDistance != null)
         {
             updateDistance(info.elapsedDistance);
+            raceProgress = calcProgress(correctedDistance);
         }
 
         computeValues(info);
@@ -287,6 +289,13 @@ class RacePilotView extends WatchUi.DataField {
         correctedDistance += deltaDistance;
     }
 
+    function calcProgress(correctedDistance as Float) as Float {
+        // Turns elapsed distance to a percentage of race distance
+        
+        return correctedDistance / raceDistance;
+
+    }
+
 
     // * ---------- PhaseManager Functions ------------------
 
@@ -322,6 +331,16 @@ class RacePilotView extends WatchUi.DataField {
 
         var expectedTime = getExpectedTime(correctedDistance);
 
+        /*  Returned time is:
+            +ve = BEHIND
+            -ve = AHEAD
+
+            e.g.
+            elapsedTime = 200s
+            expectedTime = 210s
+            delta = 200 - 210 = -10s = AHEAD by 10s
+
+        */
         return elapsedTime - expectedTime;
     }
 
@@ -370,18 +389,37 @@ class RacePilotView extends WatchUi.DataField {
     }
 
     function calculateGrey() {
-
+        /*
+            Calculated by:
+            - Get remaining distance (remainingDistance = raceDistance - corrDistance)
+            - Calculate recoverable time (recoverableTime = remainingDistance * recoveryPaceDelta)
+            - Multiply by interpolated execution factor (greyBand = recoverableTime * executionFactorGrey)
+        */
     }
 
     function calculateBlue() {
+        /*
+            Calculated by:
+            - blueBand = greyBand * executionFactorBlue
+        */
 
     }
 
     function calculateRed() {
+        /*
+            Calculated by:
+            - redBand = aggressivePaceDelta * executionFactorRed * -1
+            Inverted as AHEAD delta is NEGATIVE
+        */
 
     }
 
     function calculateYellow() {
+        /*
+            Calculated by:
+            - yellowBand = redBand * executionFactorYellow
+            Will be NEGATIVE
+        */
 
     }
 
