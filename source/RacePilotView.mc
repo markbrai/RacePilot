@@ -24,8 +24,8 @@ class RacePilotView extends WatchUi.DataField {
     // Controlled start pace delta (SECONDS/km)
     protected var controlledStartDelta = 5.0;
     // Recovery and aggressiveness pace factor percentage
-    protected var recoveryPaceDelta = 1.5; // % 
-    protected var aggressivesnessPaceDelta = 2.5; // %
+    protected var recoveryPacePercentage = 1.5; // % 
+    protected var aggressivesnessPacePercentage = 2.5; // %
 
     // Execution factor control point tables
     var greyCurve = [
@@ -87,6 +87,8 @@ class RacePilotView extends WatchUi.DataField {
     var timeDelta = 0;
     var goalDelta = 0;
     var expectedTime = 0;
+    var recoveryPaceDelta = 0;
+    var aggressivePaceDelta = 0;
 
 
 
@@ -107,6 +109,8 @@ class RacePilotView extends WatchUi.DataField {
         targetPace = calcTargetPace();
         phasePaces = calcPhasePaces(targetPace);
         expectedTimeTable = buildExpectedTimeTable();
+        recoveryPaceDelta = calcDeltaPace(recoveryPacePercentage, targetPace);
+        aggressivePaceDelta = calcDeltaPace(aggressivesnessPacePercentage, targetPace);
 
     }
 
@@ -221,7 +225,13 @@ class RacePilotView extends WatchUi.DataField {
 
     }
 
-    function getTargetPace(correctedDistance) as Float {
+    function calcDeltaPace(pacePercentage as Float, targetPace as Float) as Float {
+        // Calculates delta pace (Recovery or Aggressive) based on overall target pace
+        return targetPace * (pacePercentage / 100);
+
+    }
+
+    function getCurrentTargetPace(correctedDistance) as Float {
 
         // At start of race, return 0
         if (correctedDistance <= 0) {
@@ -250,7 +260,7 @@ class RacePilotView extends WatchUi.DataField {
         while(_distance < raceDistance) {
 
             // use midpoint of segment for better accuracy
-            var pace = getTargetPace(_distance + TABLE_STEP / 2);
+            var pace = getCurrentTargetPace(_distance + TABLE_STEP / 2);
             cumulativeTime += pace * TABLE_STEP;  // pace is in seconds per km, TABLE_STEP is in km, so cumulativeTime is in seconds
             expectedTimeTable.add(cumulativeTime);
             _distance += TABLE_STEP;
