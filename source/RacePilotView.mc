@@ -352,6 +352,33 @@ class RacePilotView extends WatchUi.DataField {
 
     // * ---------- PaceEngine Functions ------------------
 
+    function interpolateCurve(curve, progress as Float) as Float {
+        // Interpolated the execution factor curve
+        var curveValue;
+
+        return curveValue;
+    }
+
+    function calculateGrey() {
+
+    }
+
+    function calculateBlue() {
+
+    }
+
+    function calculateRed() {
+
+    }
+
+    function calculateYellow() {
+
+    }
+
+    function determineColour() {
+
+    }
+
 
     // * ---------- GuidanceEngine Functions ------------------
 
