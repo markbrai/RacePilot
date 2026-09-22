@@ -23,6 +23,54 @@ class RacePilotView extends WatchUi.DataField {
     protected var phaseDistances = [0.0, 3.0, 15.0, 18.0] as Array<Float>;
     // Controlled start pace delta (SECONDS/km)
     protected var controlledStartDelta = 5.0;
+    // Recovery and aggressiveness pace factor percentage
+    protected var recoveryPaceDelta = 1.5; // % 
+    protected var aggressivesnessPaceDelta = 2.5; // %
+
+    // Execution factor control point tables
+    var greyCurve = [
+        [0.0, 0.10],
+        [0.1, 0.15],
+        [0.25, 0.25],
+        [0.5, 0.6],
+        [0.6,0.75],
+        [0.75, 1.0],
+        [0.9, 1.0],
+        [1.0, 1.0]
+    ];
+
+    var blueCurve = [
+        [0.0, 0.80],
+        [0.1, 0.82],
+        [0.25, 0.70],
+        [0.5, 0.55],
+        [0.6,0.50],
+        [0.75, 0.40],
+        [0.9, 0.30],
+        [1.0, 0.20]
+    ];
+
+    var redCurve = [
+        [0.0, 0.60],
+        [0.1, 0.60],
+        [0.25, 0.80],
+        [0.5, 1.00],
+        [0.6, 1.00],
+        [0.75, 1.50],
+        [0.9, 3.00],
+        [1.0, 3.00]
+    ];
+
+    var yellowCurve = [
+        [0.0, 0.0],
+        [0.1, 0.0],
+        [0.25, 0.30],
+        [0.5, 0.50],
+        [0.6,0.50],
+        [0.75, 0.50],
+        [0.9, 0.70],
+        [1.0, 0.70]
+    ];
 
     // Class internal variables
     // --------------------------------------------------
@@ -39,6 +87,8 @@ class RacePilotView extends WatchUi.DataField {
     var timeDelta = 0;
     var goalDelta = 0;
     var expectedTime = 0;
+
+
 
 
 
