@@ -90,6 +90,7 @@ class RacePilotView extends WatchUi.DataField {
     var expectedTime = 0.0;
     var recoveryPaceDelta = 0.0;
     var aggressivePaceDelta = 0.0;
+    var envelopeColour = 2; // 0 = Red, 1 = Yellow, 2 = Green, 3 = Blue, 4 = Grey
 
 
 
@@ -409,43 +410,75 @@ class RacePilotView extends WatchUi.DataField {
         return curve[curve.size() - 1][1];
     }
 
-    function calculateGrey() {
+    function calculateGrey() as Float {
         /*
             Calculated by:
             - Get remaining distance (remainingDistance = raceDistance - corrDistance)
             - Calculate recoverable time (recoverableTime = remainingDistance * recoveryPaceDelta)
             - Multiply by interpolated execution factor (greyBand = recoverableTime * executionFactorGrey)
         */
+
+        var remainingDistance = raceDistance - correctedDistance;
+
+        var recoverableTime = remainingDistance * recoveryPaceDelta;
+
+        return recoverableTime * interpolateCurve(greyCurve, raceProgress);
+
     }
 
-    function calculateBlue() {
+    function calculateBlue(greyBand as Float) as Float {
         /*
             Calculated by:
             - blueBand = greyBand * executionFactorBlue
         */
 
+        return greyBand * interpolateCurve(blueCurve, raceProgress);
+
     }
 
-    function calculateRed() {
+    function calculateRed() as Float {
         /*
             Calculated by:
             - redBand = aggressivePaceDelta * executionFactorRed * -1
             Inverted as AHEAD delta is NEGATIVE
         */
 
+        return aggressivePaceDelta * interpolateCurve(redCurve, raceProgress) * -1;
+
     }
 
-    function calculateYellow() {
+    function calculateYellow(redBand as Float) as Float {
         /*
             Calculated by:
             - yellowBand = redBand * executionFactorYellow
             Will be NEGATIVE
         */
 
+        return redBand * interpolateCurve(yellowCurve, raceProgress);
+
     }
 
-    function determineColour() {
+    function determineColour() as Integer {
 
+        var greyBand = calculateGrey();
+        var blueBand = calculateBlue(greyBand);
+        var redBand = calculateRed();
+        var yellowBand = calculateYellow(redBand);
+
+        switch (envelopeColour) {
+
+            case 0:  // Red
+                break;
+            case 1:  // Yellow
+                break;
+            case 2:  // Green
+                break;
+            case 3:  // Blue
+                break;
+            case 4:  // Grey
+                break;
+        }
+        
     }
 
 
