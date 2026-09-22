@@ -381,11 +381,32 @@ class RacePilotView extends WatchUi.DataField {
 
     // * ---------- PaceEngine Functions ------------------
 
-    function interpolateCurve(curve, progress as Float) as Float {
-        // Interpolated the execution factor curve
-        var curveValue;
+    function interpolateCurve(curve as Array<Float>, progress as Float) as Float {
+        // Interpolate the execution factor curve
+        // Clamp to lowest value
+        if (progress < curve[0][0]) {
+            return curve[0][1];
+        }
 
-        return curveValue;
+        for (var i = 0; i < curve.size() -1; i++){
+            
+            var p1 = curve[i][0] as Float;
+            var v1 = curve[i][1] as Float;
+
+            var p2 = curve[i + 1][0] as Float;
+            var v2 = curve[i + 1][1] as Float;
+
+            if (progress <= p2) {
+
+                var fraction = (progress - p1) / (p1 - p2);
+
+                return v1 + fraction * (v2 - v1);
+
+            }
+        }
+        
+        // Return the max point
+        return curve[curve.size() - 1][1];
     }
 
     function calculateGrey() {
