@@ -485,32 +485,40 @@ class RacePilotView extends WatchUi.DataField {
         // hysteresis amount. This prevents oscillation around a curve.
         switch (envelopeColour) {
             case 4: // Currently Grey
+                // Moving from Grey to Blue
                 if (candidateColour != 4 && goalDelta <= greyBand - ENVELOPE_HYSTERESIS) {
                     envelopeColour = candidateColour;
                 }
                 break;
             case 3: // Currently Blue
+                // Moving from Blue to Grey
                 if (candidateColour == 4 && goalDelta > greyBand + ENVELOPE_HYSTERESIS) {
                     envelopeColour = 4;
+                // Moving from Blue to Green
                 } else if (candidateColour < 3 && goalDelta <= blueBand - ENVELOPE_HYSTERESIS) {
                     envelopeColour = candidateColour;
                 }
                 break;
             case 2: // Currently Green
+                // Moving from Green to Blue
                 if (candidateColour > 2 && goalDelta > blueBand + ENVELOPE_HYSTERESIS) {
                     envelopeColour = candidateColour;
+                // Moving from Green to Yellow
                 } else if (candidateColour < 2 && goalDelta <= yellowBand - ENVELOPE_HYSTERESIS) {
                     envelopeColour = candidateColour;
                 }
                 break;
             case 1: // Currently Yellow
+                // Moving from Yellow to Green
                 if (candidateColour > 1 && goalDelta > yellowBand + ENVELOPE_HYSTERESIS) {
                     envelopeColour = candidateColour;
+                // Moving from Yellow to Red
                 } else if (candidateColour == 0 && goalDelta < redBand - ENVELOPE_HYSTERESIS) {
                     envelopeColour = 0;
                 }
                 break;
             case 0: // Currently Red
+                // Moving from Red to Yellow
                 if (candidateColour != 0 && goalDelta >= redBand + ENVELOPE_HYSTERESIS) {
                     envelopeColour = candidateColour;
                 }
