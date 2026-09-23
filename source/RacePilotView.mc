@@ -91,6 +91,7 @@ class RacePilotView extends WatchUi.DataField {
     var recoveryPaceDelta = 0.0;
     var aggressivePaceDelta = 0.0;
     var envelopeColour = 2; // 0 = Red, 1 = Yellow, 2 = Green, 3 = Blue, 4 = Grey
+    const ENVELOPE_HYSTERESIS = 2.0; // seconds of delta required to change bands
 
 
 
@@ -399,7 +400,7 @@ class RacePilotView extends WatchUi.DataField {
 
             if (progress <= p2) {
 
-                var fraction = (progress - p1) / (p1 - p2);
+                var fraction = (progress - p1) / (p2 - p1);
 
                 return v1 + fraction * (v2 - v1);
 
@@ -465,20 +466,58 @@ class RacePilotView extends WatchUi.DataField {
         var redBand = calculateRed();
         var yellowBand = calculateYellow(redBand);
 
-        switch (envelopeColour) {
+        // First determine the band without hysteresis. Delta values run from
+        // red (most negative) to grey (most positive).
+        var candidateColour = 2; // Green
+        if (goalDelta > greyBand) {
+            candidateColour = 4; // Grey
+        } else if (goalDelta > blueBand) {
+            candidateColour = 3; // Blue
+        } else if (goalDelta > yellowBand) {
+            candidateColour = 2; // Green
+        } else if (goalDelta >= redBand) {
+            candidateColour = 1; // Yellow
+        } else {
+            candidateColour = 0; // Red
+        }
 
-            case 0:  // Red
+        // Only leave the current band after crossing its boundary by the
+        // hysteresis amount. This prevents oscillation around a curve.
+        switch (envelopeColour) {
+            case 4: // Currently Grey
+                if (candidateColour != 4 && goalDelta <= greyBand - ENVELOPE_HYSTERESIS) {
+                    envelopeColour = candidateColour;
+                }
                 break;
-            case 1:  // Yellow
+            case 3: // Currently Blue
+                if (candidateColour == 4 && goalDelta > greyBand + ENVELOPE_HYSTERESIS) {
+                    envelopeColour = 4;
+                } else if (candidateColour < 3 && goalDelta <= blueBand - ENVELOPE_HYSTERESIS) {
+                    envelopeColour = candidateColour;
+                }
                 break;
-            case 2:  // Green
+            case 2: // Currently Green
+                if (candidateColour > 2 && goalDelta > blueBand + ENVELOPE_HYSTERESIS) {
+                    envelopeColour = candidateColour;
+                } else if (candidateColour < 2 && goalDelta <= yellowBand - ENVELOPE_HYSTERESIS) {
+                    envelopeColour = candidateColour;
+                }
                 break;
-            case 3:  // Blue
+            case 1: // Currently Yellow
+                if (candidateColour > 1 && goalDelta > yellowBand + ENVELOPE_HYSTERESIS) {
+                    envelopeColour = candidateColour;
+                } else if (candidateColour == 0 && goalDelta < redBand - ENVELOPE_HYSTERESIS) {
+                    envelopeColour = 0;
+                }
                 break;
-            case 4:  // Grey
+            case 0: // Currently Red
+                if (candidateColour != 0 && goalDelta >= redBand + ENVELOPE_HYSTERESIS) {
+                    envelopeColour = candidateColour;
+                }
                 break;
         }
-        
+
+        return envelopeColour;
     }
 
 
@@ -513,6 +552,7 @@ class RacePilotView extends WatchUi.DataField {
         // Calculate maximum sustainable pace in `PaceEngine` based on aggression settings and target pace
 
         // Calculate envelope colour in PaceEngine
+        envelopeColour = determineColour();
 
         // PLACEHOLDER FOR GUIDANCE ENGINE
 
