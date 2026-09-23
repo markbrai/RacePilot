@@ -483,6 +483,9 @@ class RacePilotView extends WatchUi.DataField {
 
         // Only leave the current band after crossing its boundary by the
         // hysteresis amount. This prevents oscillation around a curve.
+
+        // TODO: Change ENVELOPE_HYSTERESIS to different values for moving in/out of bands
+
         switch (envelopeColour) {
             case 4: // Currently Grey
                 // Moving from Grey to Blue
