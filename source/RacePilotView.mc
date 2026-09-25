@@ -92,6 +92,10 @@ class RacePilotView extends WatchUi.DataField {
     var aggressivePaceDelta = 0.0;
     var envelopeColour = 2; // 0 = Red, 1 = Yellow, 2 = Green, 3 = Blue, 4 = Grey
     const ENVELOPE_HYSTERESIS = 2.0; // seconds of delta required to change bands
+    const ENVELOPE_HYS_BEHIND_SLOW = 2.0;
+    const ENVELOPE_HYS_BEHIND_FAST = 0.0;
+    const ENVELOPE_HYS_AHEAD_SLOW = 2.0;
+    const ENVELOPE_HYS_AHEAD_FAST = 0.0;
 
 
 
@@ -492,44 +496,49 @@ class RacePilotView extends WatchUi.DataField {
         // Only leave the current band after crossing its boundary by the
         // hysteresis amount. This prevents oscillation around a curve.
 
-        // TODO: Change ENVELOPE_HYSTERESIS to different values for moving in/out of bands
+        /*
+            Hysteresis needs to be different:
+            - 'Better' to 'Worse' needs to be faster
+            - 'Worse' to 'Better' needs to be slower
+            - Hysteresis for Grey/Blue and Red/Yellow need to be different as different units
+        */
 
         switch (envelopeColour) {
             case 4: // Currently Grey
-                // Moving from Grey to Blue
+                // Moving from Grey to Blue - SLOW
                 if (candidateColour != 4 && goalDelta <= greyBand - ENVELOPE_HYSTERESIS) {
                     envelopeColour = candidateColour;
                 }
                 break;
             case 3: // Currently Blue
-                // Moving from Blue to Grey
+                // Moving from Blue to Grey - FAST
                 if (candidateColour == 4 && goalDelta > greyBand + ENVELOPE_HYSTERESIS) {
                     envelopeColour = 4;
-                // Moving from Blue to Green
+                // Moving from Blue to Green - SLOW
                 } else if (candidateColour < 3 && goalDelta <= blueBand - ENVELOPE_HYSTERESIS) {
                     envelopeColour = candidateColour;
                 }
                 break;
             case 2: // Currently Green
-                // Moving from Green to Blue
+                // Moving from Green to Blue - FAST
                 if (candidateColour > 2 && goalDelta > blueBand + ENVELOPE_HYSTERESIS) {
                     envelopeColour = candidateColour;
-                // Moving from Green to Yellow
+                // Moving from Green to Yellow - SLOW
                 } else if (candidateColour < 2 && goalDelta <= yellowBand - ENVELOPE_HYSTERESIS) {
                     envelopeColour = candidateColour;
                 }
                 break;
             case 1: // Currently Yellow
-                // Moving from Yellow to Green
+                // Moving from Yellow to Green - SLOW
                 if (candidateColour > 1 && goalDelta > yellowBand + ENVELOPE_HYSTERESIS) {
                     envelopeColour = candidateColour;
-                // Moving from Yellow to Red
+                // Moving from Yellow to Red - FAST
                 } else if (candidateColour == 0 && goalDelta < redBand - ENVELOPE_HYSTERESIS) {
                     envelopeColour = 0;
                 }
                 break;
             case 0: // Currently Red
-                // Moving from Red to Yellow
+                // Moving from Red to Yellow - SLOW
                 if (candidateColour != 0 && goalDelta >= redBand + ENVELOPE_HYSTERESIS) {
                     envelopeColour = candidateColour;
                 }
