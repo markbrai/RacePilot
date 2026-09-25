@@ -29,8 +29,8 @@ class RacePilotView extends WatchUi.DataField {
 
     // Execution factor control point tables
     var greyCurve = [
-        [0.0, 0.10],
-        [0.1, 0.15],
+        [0.0, 0.15],
+        [0.1, 0.17],
         [0.25, 0.25],
         [0.5, 0.6],
         [0.6,0.75],
@@ -40,14 +40,14 @@ class RacePilotView extends WatchUi.DataField {
     ];
 
     var blueCurve = [
-        [0.0, 0.80],
-        [0.1, 0.82],
-        [0.25, 0.70],
+        [0.0, 0.75],
+        [0.1, 0.75],
+        [0.25, 0.65],
         [0.5, 0.55],
-        [0.6,0.50],
-        [0.75, 0.40],
-        [0.9, 0.30],
-        [1.0, 0.20]
+        [0.6,0.55],
+        [0.75, 0.30],
+        [0.9, 0.10],
+        [1.0, 0.00]
     ];
 
     var redCurve = [
