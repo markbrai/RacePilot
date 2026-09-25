@@ -466,6 +466,14 @@ class RacePilotView extends WatchUi.DataField {
         var redBand = calculateRed();
         var yellowBand = calculateYellow(redBand);
 
+        /*
+            Bands have to be compared against different metrics:
+            - Grey and Blue against goalDelta
+            - Red and Yellow against goalDelta/elapsedDistance
+        */
+
+        var envelopeGoalPace = goalDelta / correctedDistance;
+
         // First determine the band without hysteresis. Delta values run from
         // red (most negative) to grey (most positive).
         var candidateColour = 2; // Green
@@ -473,9 +481,9 @@ class RacePilotView extends WatchUi.DataField {
             candidateColour = 4; // Grey
         } else if (goalDelta > blueBand) {
             candidateColour = 3; // Blue
-        } else if (goalDelta > yellowBand) {
+        } else if (goalDelta < blueBand && envelopeGoalPace > yellowBand) {
             candidateColour = 2; // Green
-        } else if (goalDelta >= redBand) {
+        } else if (envelopeGoalPace > redBand) {
             candidateColour = 1; // Yellow
         } else {
             candidateColour = 0; // Red
