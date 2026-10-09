@@ -94,7 +94,7 @@ class RacePilotView extends WatchUi.DataField {
     const ENVELOPE_HYSTERESIS = 2.0; // seconds of delta required to change bands
     const ENVELOPE_HYS_BEHIND_SLOW = 2.0;
     const ENVELOPE_HYS_BEHIND_FAST = 0.0;
-    const ENVELOPE_HYS_AHEAD_SLOW = 2.0;
+    const ENVELOPE_HYS_AHEAD_SLOW = 0.25;
     const ENVELOPE_HYS_AHEAD_FAST = 0.0;
 
 
@@ -506,40 +506,40 @@ class RacePilotView extends WatchUi.DataField {
         switch (envelopeColour) {
             case 4: // Currently Grey
                 // Moving from Grey to Blue - SLOW
-                if (candidateColour != 4 && goalDelta <= greyBand - ENVELOPE_HYSTERESIS) {
+                if (candidateColour != 4 && goalDelta <= greyBand - ENVELOPE_HYS_BEHIND_SLOW) {
                     envelopeColour = candidateColour;
                 }
                 break;
             case 3: // Currently Blue
                 // Moving from Blue to Grey - FAST
-                if (candidateColour == 4 && goalDelta > greyBand + ENVELOPE_HYSTERESIS) {
+                if (candidateColour == 4 && goalDelta > greyBand + ENVELOPE_HYS_BEHIND_FAST) {
                     envelopeColour = 4;
                 // Moving from Blue to Green - SLOW
-                } else if (candidateColour < 3 && goalDelta <= blueBand - ENVELOPE_HYSTERESIS) {
+                } else if (candidateColour < 3 && goalDelta <= blueBand - ENVELOPE_HYS_BEHIND_SLOW) {
                     envelopeColour = candidateColour;
                 }
                 break;
             case 2: // Currently Green
                 // Moving from Green to Blue - FAST
-                if (candidateColour > 2 && goalDelta > blueBand + ENVELOPE_HYSTERESIS) {
+                if (candidateColour > 2 && goalDelta > blueBand + ENVELOPE_HYS_BEHIND_FAST) {
                     envelopeColour = candidateColour;
                 // Moving from Green to Yellow - SLOW
-                } else if (candidateColour < 2 && goalDelta <= yellowBand - ENVELOPE_HYSTERESIS) {
+                } else if (candidateColour < 2 && envelopeGoalPace <= yellowBand - ENVELOPE_HYS_AHEAD_SLOW) {
                     envelopeColour = candidateColour;
                 }
                 break;
             case 1: // Currently Yellow
                 // Moving from Yellow to Green - SLOW
-                if (candidateColour > 1 && goalDelta > yellowBand + ENVELOPE_HYSTERESIS) {
+                if (candidateColour > 1 && envelopeGoalPace > yellowBand + ENVELOPE_HYS_AHEAD_SLOW) {
                     envelopeColour = candidateColour;
                 // Moving from Yellow to Red - FAST
-                } else if (candidateColour == 0 && goalDelta < redBand - ENVELOPE_HYSTERESIS) {
+                } else if (candidateColour == 0 && envelopeGoalPace < redBand - ENVELOPE_HYS_AHEAD_FAST) {
                     envelopeColour = 0;
                 }
                 break;
             case 0: // Currently Red
                 // Moving from Red to Yellow - SLOW
-                if (candidateColour != 0 && goalDelta >= redBand + ENVELOPE_HYSTERESIS) {
+                if (candidateColour != 0 && envelopeGoalPace >= redBand + ENVELOPE_HYS_AHEAD_SLOW) {
                     envelopeColour = candidateColour;
                 }
                 break;
